@@ -74,13 +74,13 @@ YELLOW_LASER = load_image("pixel_laser_yellow.png")
 BG = pygame.transform.scale(load_image("background-black.png"), (WIDTH, HEIGHT))
 
 # Load sounds (These are loaded AFTER pygame.mixer.init() at the very top)
-LASER_SOUND = pygame.mixer.Sound(os.path.join(ASSETS_DIR, "laser.wav"))
-EXPLOSION_SOUND = pygame.mixer.Sound(os.path.join(ASSETS_DIR, "explosion.wav"))
+LASER_SOUND = pygame.mixer.Sound(os.path.join("bgm", "laser.wav"))
+EXPLOSION_SOUND = pygame.mixer.Sound(os.path.join("bgm", "explosion.wav"))
 
 # Music files (paths only, loaded dynamically when played)
-MAIN_MENU_MUSIC = os.path.join(ASSETS_DIR, "MainScreen.wav")
-PAUSE_MUSIC = os.path.join(ASSETS_DIR, "Loading_Screen.wav")
-GAME_MUSIC = os.path.join(ASSETS_DIR, "8bit-spaceshooter.wav")
+MAIN_MENU_MUSIC = os.path.join("bgm", "MainScreen.wav")
+PAUSE_MUSIC = os.path.join("bgm", "Loading_Screen.wav")
+GAME_MUSIC = os.path.join("bgm", "8bit-spaceshooter.wav")
 
 # Global sound/music toggle settings
 SOUND_ENABLED = True
