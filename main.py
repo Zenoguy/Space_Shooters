@@ -39,7 +39,7 @@ LASER_ENEMY_VEL = 3 # Enemy lasers move down
 KAMIKAZE_SPEED = 3
 KAMIKAZE_DIVE_SPEED = 6
 KAMIKAZE_WARNING_DURATION = 60 # 1 second at 60 FPS (assuming 60 FPS)
-ENEMY_SHOOT_CHANCE = 120 # 1 in 120 frames chance for enemy to shoot
+ENEMY_SHOOT_CHANCE = 3*60 # 1 in 120 frames chance for enemy to shoot
 PLAYER_HEALTH_MAX = 100
 ENEMY_HEALTH = 100
 KAMIKAZE_HEALTH = 50
@@ -271,7 +271,7 @@ class Player(Ship):
 
                 if hit_something and laser in self.lasers: # Remove laser if it hit anything
                     self.lasers.remove(laser)
-
+    
     def shoot(self):
         """Fires a player laser and plays sound."""
         if self.cool_down_counter == 0:
@@ -510,7 +510,7 @@ def main():
     play_music(GAME_MUSIC, -1, 0.6) # Start game music when entering main game loop
     
     run = True
-    FPS = 90
+    FPS = 60
     level = 0
     lives = INITIAL_LIVES
     main_font = pygame.font.SysFont("comicsans", 40)
@@ -562,15 +562,20 @@ def main():
             lost_label = lost_font.render("You Lost!!", 1, WHITE)
             final_score_label = main_font.render(f"Final Score: {player.score}", 1, WHITE)
             high_score_display = main_font.render(f"High Score: {high_score}", 1, WHITE)
-            restart_label = main_font.render("Press R to restart or Q to quit or M to return to menu", 1, WHITE)
-
             
+            restart_label = main_font.render(f"Press R to restart ", 1, WHITE)
+            menu_label = main_font.render(f"Press M to return to menu", 1, WHITE)
+            quit_label = main_font.render(f"Press Q to quit", 1, WHITE)
             
+            center_x = WIDTH // 2 - lost_label.get_width() // 2
 
-            WIN.blit(lost_label, (WIDTH/2 - lost_label.get_width()/2, 250))
-            WIN.blit(final_score_label, (WIDTH/2 - final_score_label.get_width()/2, 320))
-            WIN.blit(high_score_display, (WIDTH/2 - high_score_display.get_width()/2, 370))
-            WIN.blit(restart_label, (WIDTH/2 - restart_label.get_width()/2, 450))
+            WIN.blit(lost_label, (center_x, 250))
+            WIN.blit(final_score_label, (center_x, 300))
+            WIN.blit(high_score_display, (center_x, 350))
+            WIN.blit(restart_label, (center_x, 400))
+            WIN.blit(menu_label, (center_x, 450))
+            WIN.blit(quit_label, (center_x, 500))
+
 
 
 
@@ -615,7 +620,7 @@ def main():
         # Spawn new waves of enemies if all are cleared
         if len(enemies) == 0 and len(kamikaze_enemies) == 0:
             level += 1
-            wave_length += 2 # Increase number of enemies per wave
+            wave_length += 4 # Increase number of enemies per wave
 
             all_enemies = [] # Temporarily hold all enemies to check for spawn overlaps
 
@@ -624,7 +629,7 @@ def main():
                 attempts = 0
                 while True: # Loop until a valid spawn position is found
                     x = random.randrange(50, WIDTH - 100) # Keep initial x within reasonable bounds
-                    y = random.randrange(-1500, -100) # Spawn well above the screen
+                    y = random.randrange(-300*level, -100) # Spawn well above the screen
                     if is_far_enough(x, y, all_enemies) or attempts > MAX_SPAWN_ATTEMPTS:
                         break # Found a spot or max attempts reached
                     attempts += 1
@@ -643,7 +648,7 @@ def main():
                         max_x = WIDTH - KAMIKAZE_SHIP.get_width() - 50
                         x = random.randrange(50, max_x) # Adjusted upper bound for X
                         
-                        y = random.randrange(-800, -100) # Spawn above screen
+                        y = random.randrange(-300*level, -100) # Spawn above screen
                         if is_far_enough(x, y, all_enemies) or attempts > MAX_SPAWN_ATTEMPTS:
                             break
                         attempts += 1
@@ -680,18 +685,29 @@ def main():
 
         # --- GAME LOGIC (ONLY IF NOT PAUSED) ---
         if not paused:
-            # Player movement based on WASD keys
+            # Player movement based on WASD keys or arrow keys
             keys = pygame.key.get_pressed()
-            if keys[pygame.K_a] and player.x - player_vel > 0:  # Move Left
+
+            # Move Left
+            if (keys[pygame.K_a] or keys[pygame.K_LEFT]) and player.x - player_vel > 0:
                 player.x -= player_vel
-            if keys[pygame.K_d] and player.x + player_vel + player.get_width() < WIDTH:  # Move Right
+
+            # Move Right
+            if (keys[pygame.K_d] or keys[pygame.K_RIGHT]) and player.x + player_vel + player.get_width() < WIDTH:
                 player.x += player_vel
-            if keys[pygame.K_w] and player.y - player_vel > 0:  # Move Up
+
+            # Move Up
+            if (keys[pygame.K_w] or keys[pygame.K_UP]) and player.y - player_vel > 0:
                 player.y -= player_vel
-            if keys[pygame.K_s] and player.y + player_vel + player.get_height() + 15 < HEIGHT:  # Move Down (15 for health bar padding)
+
+            # Move Down (with padding for UI like health bar)
+            if (keys[pygame.K_s] or keys[pygame.K_DOWN]) and player.y + player_vel + player.get_height() + 15 < HEIGHT:
                 player.y += player_vel
+
+            # Shoot
             if keys[pygame.K_SPACE]:
-                player.shoot() # Player shoots
+                player.shoot()
+
 
             # Move and update regular enemies
             for enemy in enemies[:]:
@@ -710,7 +726,7 @@ def main():
                 elif enemy.y + enemy.get_height() > HEIGHT: # Enemy went off screen
                     lives -= 1 # Lose a life
                     enemies.remove(enemy)
-
+            
             # Move and update kamikaze enemies
             for kamikaze in kamikaze_enemies[:]:
                 kamikaze.move(enemy_vel, player) # Kamikaze targets player
