@@ -1,3 +1,4 @@
+#THIS IS A 7"69" LINES OF AMALGAMAATION OF STUPDITY, You can CHANGE what you want to, its very modular B)
 import pygame
 import os
 import time
@@ -662,18 +663,23 @@ def main():
             if event.type == pygame.QUIT:
                 run = False # Stop game loop if window is closed
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
+                if event.key in [pygame.K_ESCAPE, pygame.K_k]:
                     paused = True # Set game to paused state
                     if MUSIC_ENABLED:
-                        pygame.mixer.music.pause() # Pause game music
+                        paused_music_pos = pygame.mixer.music.get_pos() / 1000.0  # Convert ms to seconds
+                        pygame.mixer.music.stop()
+                        play_music(PAUSE_MUSIC, -1, 0.5)
+
                     action = pause_menu() # Enter the pause menu loop
                     
                     # Handle action returned from pause menu
                     if action == "resume":
                         paused = False
                         if MUSIC_ENABLED:
-                            stop_music() # Stop pause music
-                            play_music(GAME_MUSIC, -1, 0.6) # Resume game music
+                            pygame.mixer.music.stop()
+                            pygame.mixer.music.load(GAME_MUSIC)
+                            pygame.mixer.music.play(-1, start=paused_music_pos)
+
                     elif action == "new_game":
                         stop_music()
                         main() # Start a new game
@@ -739,6 +745,17 @@ def main():
                 elif kamikaze.y + kamikaze.get_height() > HEIGHT: # Kamikaze went off screen
                     lives -= 1
                     kamikaze_enemies.remove(kamikaze)
+                    
+                # --- Laser vs Laser Collision ---
+            for enemy in enemies:
+                for enemy_laser in enemy.lasers[:]:
+                    for player_laser in player.lasers[:]:
+                        if enemy_laser.collision(player_laser):
+                            if enemy_laser in enemy.lasers:
+                                enemy.lasers.remove(enemy_laser)
+                            if player_laser in player.lasers:
+                                player.lasers.remove(player_laser)
+                            break  # Break inner loop once collision occurs
 
             # Move player's lasers and handle collisions with enemies
             player.move_lasers(LASER_PLAYER_VEL, enemies, kamikaze_enemies)
