@@ -4,6 +4,8 @@ import os
 import time
 import random
 import math
+import sys 
+
 
 # --- PYGAME INITIALIZATION (CRITICAL: MUST BE FIRST) ---
 # Initialize pygame modules
@@ -17,6 +19,13 @@ pygame.mixer.init()
 WIDTH, HEIGHT = 768 , 768
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Space Shooter")
+
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and PyInstaller """
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.abspath("."), relative_path)
+
 
 # Paths
 ASSETS_DIR = "assets"
@@ -58,8 +67,8 @@ ENEMY_COOLDOWN = 30
 
 # Load images
 def load_image(filename):
-    """Helper function to load images from the assets directory."""
-    return pygame.image.load(os.path.join(ASSETS_DIR, filename))
+    """Load image from the assets directory"""
+    return pygame.image.load(resource_path(os.path.join("assets", filename)))
 
 RED_SPACE_SHIP = load_image("pixel_ship_red_small.png")
 GREEN_SPACE_SHIP = load_image("pixel_ship_green_small.png")
@@ -74,14 +83,17 @@ YELLOW_LASER = load_image("pixel_laser_yellow.png")
 
 BG = pygame.transform.scale(load_image("background-black.png"), (WIDTH, HEIGHT))
 
-# Load sounds (These are loaded AFTER pygame.mixer.init() at the very top)
-LASER_SOUND = pygame.mixer.Sound(os.path.join("bgm", "laser.mp3"))
-EXPLOSION_SOUND = pygame.mixer.Sound(os.path.join("bgm", "explosion.mp3"))
+# Load sound effects
+
+LASER_SOUND = pygame.mixer.Sound(resource_path(os.path.join("bgm", "laser.mp3")))
+EXPLOSION_SOUND = pygame.mixer.Sound(resource_path(os.path.join("bgm", "explosion.mp3")))
 
 # Music files (paths only, loaded dynamically when played)
-MAIN_MENU_MUSIC = os.path.join("bgm", "MainScreen.mp3")
-PAUSE_MUSIC = os.path.join("bgm", "Loading_Screen.mp3")
-GAME_MUSIC = os.path.join("bgm", "8bit-spaceshooter.mp3")
+
+MAIN_MENU_MUSIC = resource_path(os.path.join("bgm", "MainScreen.mp3"))
+PAUSE_MUSIC = resource_path(os.path.join("bgm", "Loading_Screen.mp3"))
+GAME_MUSIC = resource_path(os.path.join("bgm", "8bit-spaceshooter.mp3"))
+
 
 # Global sound/music toggle settings
 SOUND_ENABLED = True
