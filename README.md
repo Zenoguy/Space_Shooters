@@ -2,6 +2,11 @@
 
 A classic arcade-style space shooter game built with Python and Pygame, featuring multiple enemy types, power-ups, and progressive difficulty levels.
 
+
+## Download 
+linux -> https://drive.google.com/file/d/1glHPw6BS_xvznkOcH-lrjffHMVsdtlQ9/view?usp=sharing
+
+
 ## Features
 
 - **Classic Space Shooter Gameplay**: Control your spaceship and defend against waves of enemies
