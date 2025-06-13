@@ -6,7 +6,7 @@ A classic arcade-style space shooter game built with Python and Pygame, featurin
 ## Download 
 linux -> https://drive.google.com/file/d/1glHPw6BS_xvznkOcH-lrjffHMVsdtlQ9/view?usp=sharing
 
-Windows -> https://drive.google.com/file/d/10WVr33Eg5l3H96fwmkPcUBM3VcDfWj_L/view?usp=drive_link
+Windows -> https://zenoguy.itch.io/space-shooters-concept-game
 
 ## Features
 
